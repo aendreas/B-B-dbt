@@ -1,0 +1,58 @@
+version: 2
+
+seeds:
+  - name: companies
+    description: This seed represents a list of companies, used for the translation of company_id to company names.
+    columns:
+      - name: Company Name
+        alias: name
+        description: The name of a company
+        quote: true
+        tests:
+          - not_null
+      - name: Business Code
+        description: A two-letter code that represents the business.
+        quote: true
+      - name: Sector Code
+        description: A two-digit code that represents the company_id.
+        quote: true
+      - name: Whitelisted
+        description: Wheter or not the company is whitelisted. 
+        quote: true
+  
+  - name: loc_stanox_translation
+    description: This seed represents a translation from stanox to location-ids.
+    columns:
+      - name: loc_stanox
+        description: STANOX Code for a location.
+        tests:
+          - not_null
+      - name: location_id
+        description: Unique location identifier. 
+        tests:
+          - not_null
+  
+  - name: schedules
+    description: This seed represents a schedule of train movements.
+    columns:
+      - name: train_id
+        description: A unique train identifier.
+        tests:
+          - not_null
+      - name: start_time
+        description: Foreign key for time of departure of the journey. 
+        tests:
+          - not_null
+      - name: end_time
+        description: Foreign key for time of arrival of the journey.
+        tests:
+          - not_null
+      - name: loc_id_start
+        description: Foreign key for the location id of the journey departure. 
+        tests:
+          - not_null
+      - name: loc_id_end
+        description: Foreign key for the location id of the journey arrival. 
+        tests:
+          - not_null
+  
