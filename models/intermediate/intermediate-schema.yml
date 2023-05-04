@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: int__train
+    description: This view represents a unique list of train ids.
+    columns: 
+      - name: train_id
+        description: The unique train id.
+        tests:
+          - not_null
+          - unique
+  - name: int__company
+    description: This CTE represents a mapping of company names and company ids as per TOC.
+    columns: 
+      - name: company_name
+        description: The company_name.
+        tests:
+          - not_null
+          - unique
+      - name: company_id
+        description: The unique company id.
+        tests:
+          - not_null
+          - unique
