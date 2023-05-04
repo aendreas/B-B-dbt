@@ -1,0 +1,404 @@
+version: 2
+
+models:
+  - name: stg__associations
+    description: Staged view that represents cleaned Association records. Association records provide information about the possible associations between two train schedules (i.e. a main train and an associated train.)
+    columns:
+      - name: CIF_stp_indicator
+        quote: true
+        description: '{{ doc("CIF_stp") }}'
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['C', 'N', 'O', 'P']
+      - name: assoc_days
+        description: A seven-character field; character 1 represents Monday, character 7 represents Sunday. A 1 in a character position means that the service runs on that day, while a 0 means that it does not.
+        tests:
+        - not_null
+        - validate_assoc_days
+      - name: assoc_end_date
+        description: End date for the association (in DD MM YYYY HH:mm:ss format). This date uses the timezone GMT.
+        tests:
+        - not_null
+      - name: assoc_location_suffix
+        description: Together with the tiploc_code, identifies the event on the associated UID.
+      - name: assoc_start_date
+        description: Start date for the association (in DD MM YYYY HH:mm:ss format). This date uses the timezone GMT.
+        tests:
+        - not_null
+      - name: assoc_train_uid
+        description: UID of the other train in the association.
+        tests:
+        - not_null
+      - name: base_location_suffix
+        description: Together with the tiploc_code, identifies the event on the base UID.
+      - name: category
+        description: '{{ doc("assoc_cat") }}'
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['JJ', 'VV', 'NP', '  ']
+      - name: date_indicator
+        description: '{{ doc("date_ind") }}'
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['S', 'N', 'P', ' ']
+      - name: main_train_uid
+        description: UID of one train in the association.
+        tests:
+        - not_null
+      - name: transaction_type
+        description: '{{ doc("transaction_type") }}'
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['Create', 'Update']
+      - name: tiploc_code
+        description: TIPLOC of the location where the association applies.
+        tests:
+        - not_null
+      - name: year
+        description: Year of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: month
+        description: Month of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: day
+        description: Day of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: hour
+        description: Hour of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: minute
+        description: Minute of the moment of data capture (as an integer).
+        tests:
+        - not_null
+
+  - name: stg__change_of_location
+    description: Staged view that represents cleaned Change of Location records.
+    columns:
+      - name: train_id
+        description: The 10-character unique identity for this train at TRUST activation time.
+        tests:
+        - not_null
+      - name: loc_stanox
+        description: The STANOX of the new calling point of the train.
+        tests:
+        - not_null
+      - name: train_service_code
+        description: Train service code as per schedule.
+        tests:
+        - not_null
+
+  - name: stg__date
+    description: The date spine for the application.
+    columns:
+      - name: yyyymmdd
+        description: The primary key for this view.
+        tests:
+        - unique
+        - not_null
+        - date_format
+      - name: year
+        description: The year of the date.
+      - name: month
+        description: The month of the date (as a numeric).
+      - name: day
+        description: The day of the date (as a numeric).
+  - name: stg__locations
+    description: Staged view that represents cleaned Location records.
+    columns:
+      - name: location_id
+        description: The location identifier of the location.
+        tests:
+        - unique
+        - not_null
+      - name: name
+        description: The name of the location - if applicable.
+      - name: description
+        description: The long name of the location.
+      - name: crs_code
+        description: The 3-Aplha Code or Computer Reservation System code or National Reservation System code of the location.
+        tests:
+        - not_null
+
+  - name: stg__movements
+    description: Staged view that represents cleaned Movement records.
+    columns:
+      - name: event_type
+        description: The type of event - either "ARRIVAL" or "DEPARTURE".
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['ARRIVAL', 'DEPARTURE']
+      - name: gbtt_timestamp
+        description: The planned GBTT (passenger) date and time that the event was due to happen at this location (in DD MM YYYY HH:mm:ss format). This date uses the timezone GMT.
+      - name: planned_timestamp
+        description: The planned date and time that this event was due to happen at this location (in DD MM YYYY HH:mm:ss format). This date uses the timezone GMT.
+        tests:
+        - not_null
+      - name: timetable_variation
+        description: The number of minutes variation from the scheduled time at this location. Off-route reports will contain "0".
+        tests:
+        - not_null
+      - name: delay_monitoring_point
+        description: Set to "true" if this is a delay monitoring point, "false" if it is not. Off-route reports will contain "false".
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['true', 'false']
+      - name: next_report_run_time
+        description: The running time to the next location
+      - name: reporting_stanox
+        description: The STANOX of the location that generated this report. Set to "00000" for manual and off-route reports.
+      - name: actual_timestamp
+        description: The date and time that this event happened at the location (in DD MM YYYY HH:mm:ss format). This date uses the timezone GMT.
+        tests:
+        - not_null
+      - name: correction_ind
+        description: Set to "false" if this report is not a correction of a previous report, or "true" if it is.
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['true', 'false']
+      - name: event_source
+        description: Whether the event source was "AUTOMATIC" from SMART, or "MANUAL" from TOPS or TRUST SDR.
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['AUTOMATIC', 'MANUAL']
+      - name: platform
+        description: Two characters (including a space for a single character) or blank if the movement report is associated with a platform number.
+      - name: train_terminated
+        description: Set to "true" if the train has completed its journey, or "false" otherwise.
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['true', 'false']
+      - name: train_id
+        description: The 10-character unique identity for this train at TRUST activation time.
+        tests:
+        - not_null
+      - name: offroute_ind
+        description: Set to "false" if this report is for a location in the schedule, or "true" if it is not.
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['true' ,'false']
+      - name: variation_status
+        description: One of "ON TIME", "EARLY", "LATE" or "OFF ROUTE"
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['ON TIME', 'EARLY', 'LATE', 'OFF ROUTE']
+      - name: train_service_code
+        description: Train service code as per schedule.
+        tests:
+        - not_null
+      - name: company_id
+        description: Operating company ID as per TOC Codes.
+        tests:
+        - not_null
+      - name: loc_stanox
+        description: The STANOX of the location at which this event happened.
+        tests:
+        - not_null
+      - name: auto_expected
+        description: Set to "true" if an automatic report is expected for this location, otherwise "false".
+      - name: direction_ind
+        description: For automatic reports, either "UP" or "DOWN" depending on the direction of travel.
+      - name: route
+        description: A number or blank to indicate the exit route from this location. A value of 'F' indicates the train failed to stop here.
+      - name: planned_event_type
+        description: The planned type of event - one of "ARRIVAL", "DEPARTURE" or "DESTINATION".
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['DEPARTURE', 'ARRIVAL', 'DESTINATION']
+      - name: next_report_stanox
+        description: The STANOX of the location at which the next report for this train is due.
+      - name: year
+        description: Year of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: month
+        description: Month of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: day
+        description: Day of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: hour
+        +column_type: 
+        description: Hour of the moment of data capture (as an integer).
+        tests:
+        - not_null
+        - length:
+            len: 2
+      - name: minute
+        description: Minute of the moment of data capture (as an integer).
+        tests:
+        - not_null
+
+  - name: stg__ticket_sales
+    description: Staged view that represents cleaned ticket sales data.
+    columns:
+      - name: arrival_tiploc
+        description: The TIPLOC code of the station at which the passenger steps off a train.
+        tests:
+        - not_null
+      - name: bought_at
+        description: The location of ticket purchase.
+        tests:
+        - not_null
+      - name: class_name
+        description: The class of the train ticket.
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['First', 'Standard']
+      - name: departure_tiploc
+        description: The TIPLOC code of the station at which the passenger takes a train.
+        tests:
+        - not_null
+      - name: price
+        description: The amount of money paid for the ticket.
+        tests:
+        - not_null
+        - positive
+      - name: sale_id
+        description: The unique sales identifier.
+        tests:
+        - unique
+        - not_null
+      - name: class
+        description: The class of the train ticket in numerical form. "1" is for First class, "0" for Standard.
+        tests:
+        - not_null
+        - accepted_values:
+            values: [0, 1]
+      - name: bought_online
+        description: Wheter or not the ticket was bought online. 0 stands for no, 1 for yes.
+        tests:
+        - not_null
+        - accepted_values:
+            values: [0, 1]
+      - name: year
+        description: Year of the moment of ticket purchase (as an integer).
+        tests:
+        - not_null
+      - name: month
+        description: Month of the moment of ticket purchase (as an integer).
+        tests:
+        - not_null
+      - name: day
+        description: Day of the moment of ticket purchase (as an integer).
+        tests:
+        - not_null
+      - name: hour
+        description: Hour of the moment of ticket purchase (as an integer).
+        tests:
+        - not_null
+      - name: minute
+        description: Minute of the moment of ticket purchase (as an integer).
+        tests:
+        - not_null
+
+  - name: stg__time
+    description: The time spine for the application.
+    columns:
+      - name: hhmm
+        description: The primary key for this view (concatenation of hours and minutes with padding).
+        tests:
+        - unique
+        - not_null
+      - name: hour
+        description: The hour of the time.
+        tests:
+        - not_null
+      - name: minute
+        description: The minute of the time.
+        tests:
+        - not_null
+
+  - name: stg__tiploc
+    description: Staged view that represents cleaned tiploc data.
+    columns:
+      - name: crs_code
+        description: The 3-Aplha Code or Computer Reservation System code or National Reservation System code of the location.
+      - name: description
+        description: The full name for the nlc_code, if applicable.
+        tests:
+      - name: stanox
+        description: The STANOX code of the scheduled location.
+      - name: tiploc_code
+        description: TIPLOC of the location where the schedule applies.
+        tests:
+        - not_null
+      - name: tps_description
+        description: The full name for the TIPLOC of the location where the schedule applies.
+        tests:
+        - not_null
+      - name: transaction_type
+        description: '{{ doc("transaction_type") }}'
+        tests:
+        - not_null
+        - accepted_values:
+            values: ['Create', 'Update']
+      - name: nlc_code
+        description: National Location Code of the location where the schedule applies.
+        tests:
+        - not_null
+      - name: year
+        description: Year of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: month
+        description: Month of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: day
+        description: Day of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: hour
+        description: Hour of the moment of data capture (as an integer).
+        tests:
+        - not_null
+      - name: minute
+        description: Minute of the moment of data capture (as an integer).
+        tests:
+        - not_null
+
+  - name: stg__companies
+    description: This seed represents a list of companies, used for the translation of company_id to company names.
+    columns:
+      - name: company_name
+        description: The name of a company
+        tests:
+          - not_null
+      - name: business_code
+        description: A two-letter code that represents the business.
+      - name: sector_code
+        description: A two-digit code that represents the company_id.
+      - name: whitelisted
+        description: Wheter or not the company is whitelisted. 
+
+  - name: stg__loc_stanox_translation
+    description: This seed represents a translation from STANOX to location_id.
+    columns:
+      - name: loc_stanox
+        description: The STANOX code for the location.
+        tests:
+          - not_null
+      - name: location_id
+        description: The location id for the location.
+        tests:
+          - not_null
+  

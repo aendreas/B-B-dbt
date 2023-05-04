@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg__schedules
+    description: This seed represents a schedule, used for linking trains to TIPLOC locations of their journey.
+    columns:
+      - name: train_id
+        description: The unique train identifier.
+        tests:
+          - not_null
+      - name: start_time
+        description: The foreign key for the start time.
+        tests:
+          - not_null
+      - name: loc_id_start
+        description: The location_id for the start destination.
+        tests:
+          - not_null
+      - name: loc_id_end
+        description: The location_id for the end destination.
+        tests:
+          - not_null
+      - name: end_time
+        description: The foreign key for the end time.
+        tests:
+          - not_null
