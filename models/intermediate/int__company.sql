@@ -20,7 +20,7 @@ unioned AS (
 
 final AS (
     SELECT DISTINCT u.company_id, c.company_name
-    FROM unioned u INNER JOIN {{ ref('stg__companies')}} c ON (c.company_name = u.company_id)
+    FROM unioned u INNER JOIN {{ ref('stg__companies')}} c ON (c.sector_code = u.company_id)
     WHERE company_name NOT LIKE '%Govia%'
 )
 

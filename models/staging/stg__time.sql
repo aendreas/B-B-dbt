@@ -14,11 +14,11 @@ date_spine_column AS (
 ),
 
 extracted_h_m AS (
-    SELECT EXTRACT(HOUR FROM AS_OF_DATE) AS HOUR, EXTRACT(MINUTE FROM AS_OF_DATE) AS MINUTE FROM date_spine_column
+    SELECT CAST(EXTRACT(HOUR FROM AS_OF_DATE) AS SMALLINT) AS HOUR, CAST(EXTRACT(MINUTE FROM AS_OF_DATE) AS SMALLINT) AS MINUTE FROM date_spine_column
 ),
 
 final AS (
-    SELECT lpad(HOUR::varchar, 2, '0') || lpad(MINUTE::varchar, 2, '0') AS hhmm, * FROM extracted_h_m
+    SELECT CAST(lpad(HOUR::varchar, 2, '0') || lpad(MINUTE::varchar, 2, '0') AS CHAR(4)) AS hhmm, * FROM extracted_h_m
 )
 
 

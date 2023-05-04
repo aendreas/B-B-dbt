@@ -1,0 +1,161 @@
+version: 2
+
+models:
+  - name: dim__company
+    description: "The Company Dimension in the star schema."
+    columns:
+      - name: company_id
+        description: "The primary key for this table."
+        tests:
+          - unique
+          - not_null
+          - length:
+              len: 2
+      - name: company_name
+        quote: true
+        description: "The name of the train company."
+        tests:
+          - unique
+          - not_null
+          
+  - name: dim__date
+    description: "The Date Dimension in the star schema."
+    columns:
+      - name: yyyymmdd
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+          - length:
+              len: 8
+      - name: year
+        description: Year of the event (as an integer).
+        tests:
+          - not_null
+          - length:
+              len: 4
+      - name: month
+        description: Month of the event (as an integer).
+        tests:
+          - not_null
+      - name: day
+        description: Day of the event (as an integer).
+        tests:
+          - not_null
+
+  - name: dim__location
+    description: "The Location Dimension in the star schema."
+    columns:
+      - name: location_id
+        description: The location identifier of the location.
+        tests:
+        - unique
+        - not_null
+        - length:
+            len: 4
+      - name: name
+        description: The name of the location - if applicable.
+      - name: description
+        description: The long name of the location.
+      - name: crs_code
+        description: The 3-Aplha Code or Computer Reservation System code or National Reservation System code of the location.
+        tests:
+        - not_null
+
+  - name: dim__time
+    description: "The Time Dimension in the star schema."
+    columns:
+      - name: hhmm
+        description: "The primary key for this table."
+        tests:
+          - unique
+          - not_null
+          - length:
+              len: 4
+      - name: hour
+        description: Hour of the event (as an integer).
+        tests:
+          - not_null
+      - name: minute
+        description: Minute of the event (as an integer).
+        tests:
+          - not_null
+
+  - name: dim__train
+    description: "The Train Dimension in the star schema."
+    columns:
+      - name: train_id
+        description: "The primary key for this table."
+        tests:
+          - unique
+          - not_null
+          - length:
+              len: 10
+
+  - name: fct__train_delays
+    description: "The Fact table that binds the star schema together."
+    columns:
+      - name: train_id
+        description: The foreign key to link to dim__train.
+        tests:
+          - not_null
+          - length:
+              len: 10
+      - name: company_id
+        description: The foreign key to link to dim__company.
+        tests:
+          - not_null
+          - length:
+              len: 2
+      - name: planned_leg_arrival_hhmm
+        description: The foreign key to link to dim__time for the leg arrival.
+        tests:
+          - not_null
+          - length:
+              len: 4
+      - name: planned_leg_arrival_yyyymmdd
+        description: The foreign key to link to dim__date for the leg arrival.
+        tests:
+          - not_null
+          - length:
+              len: 8
+      - name: departure_journey_hhmm
+        description: The foreign key to link to dim__time for the scheduled departure time of the journey.
+        tests:
+          - not_null
+          - length:
+              len: 4
+      - name: end_of_journey_hhmm
+        description: The foreign key to link to dim__time for the scheduled arrival time of the journey.
+        tests:
+          - not_null
+          - length:
+              len: 4
+      - name: leg_delay
+        description: The amount of minutes of delay the train has. If the value is negative, the train is early.
+        tests:
+          - not_null
+      - name: has_leg_delay
+        description: Wheter or not a train has delay. Delay is defined as 2 minutes or longer of waiting before the train arrives.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['true', 'false']
+      - name: current_location_id_leg
+        description: The foreign key to link to dim__location for the current location.
+        tests:
+          - not_null
+          - length:
+              len: 4
+      - name: location_id_start_of_journey
+        description: The foreign key to link to dim__location for the departure location.
+        tests:
+          - not_null
+          - length:
+              len: 4
+      - name: location_id_end_of_journey
+        description: The foreign key to link to dim__location for the arrival location.
+        tests:
+          - not_null
+          - length:
+              len: 4
