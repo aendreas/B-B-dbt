@@ -3,7 +3,6 @@ This repository is used for a demo in a Bytes & Booze session.
 
 The demo makes use of branches to show the phases of dbt development.
 
-| --- | --- |
 | Branch | Description |
 | --- | --- |
 | dbt-init | The folder structure after issuing 'dbt init' |
@@ -13,4 +12,3 @@ The demo makes use of branches to show the phases of dbt development.
 | intermediate | The project after implementing intermediate models |
 | dimensions | The project after implementing dimension models |
 | facts | The project after implementing fact tables |
-| --- | --- |
